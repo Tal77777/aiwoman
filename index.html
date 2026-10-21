@@ -1,0 +1,663 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Claude Code מאפס | קורס חי לנשים מתחילות</title>
+<meta name="description" content="קורס חי של 5 מפגשים לנשים שמתחילות מאפס: מתקינות Claude Code, בונות אתר עסקי בעברית ומעלות אותו לאוויר. בלי ידע בקוד.">
+<meta property="og:title" content="Claude Code מאפס: מתחילות מאפס, מסיימות עם אתר באוויר">
+<meta property="og:description" content="5 מפגשים חיים, פרונטלי וזום. בלי ידע בקוד ובלי רקע טכני.">
+<meta property="og:image" content="assets/tal.webp">
+<meta property="og:locale" content="he_IL">
+<meta name="theme-color" content="#f5efe6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141b2d" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="assets/favicon.png">
+<link rel="preload" href="assets/discovery-bold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/discovery-light.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face{font-family:"Discovery";font-weight:300 500;font-style:normal;font-display:swap;src:url(assets/discovery-light.woff2) format("woff2")}
+@font-face{font-family:"Discovery";font-weight:600 900;font-style:normal;font-display:swap;src:url(assets/discovery-bold.woff2) format("woff2")}
+
+/* Colors come from the syllabus (aiwomen.co.il). The hero is the one loud moment; everything after it stays quiet. */
+:root{
+  --bg:#f5efe6; --paper:#fbf7f0; --ink:#1f2d4a; --ink2:#46506b; --muted:#6c7388;
+  --line:rgba(31,45,74,.15); --accent:#c8633f; --accent-ink:#a84d2c; --on-accent:#fff;
+  --sage:#87a878; --sage-ink:#365a32; --rose:#d4a5a0; --gold:#f6cc6a;
+  --navy:#1f2d4a; --on-navy:#f5efe6; --navy-edge:transparent; --field:#fff; --err:#b3261e;
+  --sans:"Discovery","Heebo","Assistant",system-ui,sans-serif;
+  --wrap:1120px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141b2d; --paper:#1c2540; --ink:#f3ece1; --ink2:#c5c9d6; --muted:#98a0b4;
+  --line:rgba(243,236,225,.16); --accent:#e07d58; --accent-ink:#f0a285; --on-accent:#1a1209;
+  --sage:#87a878; --sage-ink:#a9c79b; --rose:#b8847f; --gold:#f6cc6a;
+  --navy:#0f1526; --on-navy:#f3ece1; --navy-edge:rgba(243,236,225,.22); --field:#141b2d; --err:#ff8a80; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141b2d; --paper:#1c2540; --ink:#f3ece1; --ink2:#c5c9d6; --muted:#98a0b4;
+  --line:rgba(243,236,225,.16); --accent:#e07d58; --accent-ink:#f0a285; --on-accent:#1a1209;
+  --sage:#87a878; --sage-ink:#a9c79b; --rose:#b8847f; --gold:#f6cc6a;
+  --navy:#0f1526; --on-navy:#f3ece1; --navy-edge:rgba(243,236,225,.22); --field:#141b2d; --err:#ff8a80; color-scheme:dark}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:1rem;touch-action:manipulation}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{font-family:var(--sans);font-size:1.125rem;background:var(--bg);color:var(--ink);line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{max-width:100%;display:block}
+a{color:inherit}
+h1,h2,h3{text-wrap:balance;line-height:1.15;letter-spacing:-.02em}
+p{text-wrap:pretty}
+.nw{white-space:nowrap}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+.wrap{max-width:var(--wrap);margin-inline:auto;padding-inline:max(16px,env(safe-area-inset-left,0px))}
+.skip{position:absolute;inset-inline-start:1rem;top:-4rem;background:var(--ink);color:var(--bg);padding:.6rem 1rem;border-radius:8px;z-index:20}
+.skip:focus{top:1rem}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;font:inherit;font-weight:700;font-size:1.05rem;min-height:3.1rem;padding:.7rem 1.6rem;border-radius:999px;border:2px solid var(--accent);background:var(--accent);color:var(--on-accent);text-decoration:none;cursor:pointer;transition:background-color .15s,border-color .15s,transform .15s}
+.btn:hover{background:var(--accent-ink);border-color:var(--accent-ink)}
+.btn:active{transform:translateY(1px)}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--ink)}
+.btn.ghost:hover{background:var(--ink);color:var(--bg)}
+
+/* top bar */
+.top{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding-block:1.2rem}
+.top img{width:92px;height:auto}
+.top a.link{font-weight:700;font-size:1rem;text-decoration:none;border-bottom:2px solid var(--accent)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .logo{filter:brightness(0) invert(.94)}}
+:root[data-theme="dark"] .logo{filter:brightness(0) invert(.94)}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:3rem;align-items:center;padding-block:2rem 4.5rem}
+.kicker{display:inline-block;font-weight:700;font-size:.95rem;border:2px solid var(--ink);border-radius:999px;padding:.2rem .9rem;margin-bottom:1.2rem}
+.hero h1{font-size:clamp(2.5rem,6.2vw,4.4rem);font-weight:800;letter-spacing:-.035em}
+.hero h1 span{display:block}
+.hero .lead{font-size:clamp(1.1rem,1.8vw,1.3rem);color:var(--ink2);max-width:40ch;margin-top:1.3rem}
+.ctas{display:flex;gap:.8rem;flex-wrap:wrap;margin-top:2rem}
+.facts{display:flex;flex-wrap:wrap;gap:.4rem 1.6rem;margin-top:2rem;padding-top:1.3rem;border-top:1.5px solid var(--line);list-style:none}
+.facts li{font-size:1rem;color:var(--ink2)}
+.facts b{color:var(--ink);font-size:1.15rem;margin-inline-end:.25rem}
+
+/* hero visual: one request in, one site out */
+.demo{position:relative;padding-block-start:5.6rem;padding-inline-end:1.5rem}
+.ask{position:absolute;top:0;inset-inline-end:0;z-index:2;max-width:22rem;background:var(--navy);color:var(--on-navy);border:1.5px solid var(--navy-edge);border-radius:20px 20px 20px 6px;padding:1rem 1.2rem;font-size:1rem;line-height:1.5;box-shadow:0 14px 30px -14px rgba(31,45,74,.55)}
+.ask small{display:block;font-size:.8rem;color:var(--gold);font-weight:700;margin-bottom:.25rem}
+.browser{background:var(--paper);border:2px solid var(--ink);border-radius:18px;overflow:hidden;box-shadow:10px 12px 0 var(--accent)}
+.bar{display:flex;align-items:center;gap:.6rem;padding:.7rem .9rem;border-bottom:2px solid var(--ink);background:var(--bg)}
+.dots{display:flex;gap:.3rem}
+.dots i{width:.6rem;height:.6rem;border-radius:50%;border:1.5px solid var(--ink)}
+.url{flex:1;font-size:.85rem;background:var(--paper);border:1.5px solid var(--line);border-radius:999px;padding:.15rem .8rem;direction:ltr;text-align:left;color:var(--ink2)}
+.site{padding:1.4rem 1.4rem 1.6rem;display:grid;gap:.9rem}
+.site .s-head{display:flex;align-items:center;gap:.8rem}
+.site .s-logo{width:2.6rem;height:2.6rem;border-radius:50%;background:var(--sage);flex:0 0 auto}
+.site .s-title{font-weight:800;font-size:1.35rem;line-height:1.1}
+.site .s-title small{display:block;font-weight:400;font-size:.85rem;color:var(--ink2)}
+.site .s-img{height:7.5rem;border-radius:12px;background:linear-gradient(135deg,var(--rose),var(--gold))}
+.site .s-row{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem}
+.site .s-row div{border:1.5px solid var(--line);border-radius:10px;padding:.5rem .6rem;font-size:.82rem;line-height:1.35}
+.site .s-row b{display:block;font-size:.9rem}
+.site .s-btn{justify-self:start;background:var(--sage-ink);color:#fff;font-weight:700;font-size:.9rem;padding:.45rem 1.1rem;border-radius:999px}
+.demo figcaption{margin-top:1.6rem;font-size:.95rem;color:var(--ink2);max-width:36ch}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .site .s-btn{background:var(--sage);color:#141b2d}}
+:root[data-theme="dark"] .site .s-btn{background:var(--sage);color:#141b2d}
+
+/* the single orchestrated load moment */
+@media (prefers-reduced-motion: no-preference){
+  .ask{animation:pop .5s cubic-bezier(.2,.8,.3,1.2) .2s both}
+  .site>*{animation:build .45s ease-out both}
+  .site>:nth-child(1){animation-delay:.8s}
+  .site>:nth-child(2){animation-delay:1s}
+  .site>:nth-child(3){animation-delay:1.2s}
+  .site>:nth-child(4){animation-delay:1.4s}
+  .url span{animation:type 0s 1.6s both}
+  @keyframes pop{from{opacity:0;transform:translateY(12px) scale(.96)}}
+  @keyframes build{from{opacity:0;transform:translateY(8px)}}
+  @keyframes type{from{visibility:hidden}}
+}
+
+/* sections */
+section{padding-block:4.5rem}
+.sec-head{max-width:46rem;margin-bottom:2.4rem}
+.sec-head h2{font-size:clamp(1.9rem,3.6vw,2.6rem);font-weight:800}
+.sec-head p{color:var(--ink2);margin-top:.8rem;max-width:56ch}
+.band{background:var(--paper);border-block:1.5px solid var(--line)}
+
+/* for whom */
+.fit{display:grid;grid-template-columns:1.3fr 1fr;gap:2.4rem;align-items:start}
+.checks{list-style:none;display:grid;gap:1rem}
+.checks li{position:relative;padding-inline-start:2.4rem;font-size:1.15rem}
+.checks li::before{content:"";position:absolute;inset-inline-start:0;top:.2em;width:1.5rem;height:1.5rem;border-radius:50%;background:var(--sage) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 12.5l4 4 8-9' fill='none' stroke='%23fff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/70% no-repeat}
+.nocode{background:var(--navy);color:var(--on-navy);border:1.5px solid var(--navy-edge);border-radius:22px;padding:2rem}
+.nocode h3{font-size:1.6rem;font-weight:800;margin-bottom:.7rem}
+.nocode p{opacity:.92}
+.nocode .say{margin-top:1.3rem;padding:.9rem 1.1rem;border-radius:14px;border:1.5px dashed rgba(246,204,106,.6);color:var(--gold);font-size:1rem}
+
+/* outcomes: one panel, three columns */
+.outs{display:grid;grid-template-columns:repeat(3,1fr);background:var(--paper);border:1.5px solid var(--line);border-radius:22px}
+.out{padding:2rem 1.8rem}
+.out+.out{border-inline-start:1.5px solid var(--line)}
+.out svg{width:2.6rem;height:2.6rem;margin-bottom:1rem}
+.out h3{font-size:1.35rem;font-weight:800;margin-bottom:.4rem}
+.out p{color:var(--ink2);font-size:1.02rem}
+
+/* sessions: a real sequence, so numbers and a connecting line */
+.sessions{list-style:none;display:grid;gap:1rem;position:relative}
+.sessions::before{content:"";position:absolute;inset-inline-start:1.55rem;top:1.5rem;bottom:1.5rem;width:2px;background:var(--line)}
+.session{position:relative;display:grid;grid-template-columns:3.1rem 1fr;gap:1.2rem}
+.num{width:3.1rem;height:3.1rem;border-radius:50%;background:var(--ink);color:var(--bg);display:grid;place-items:center;font-weight:800;font-size:1.25rem;position:relative;z-index:1}
+.session:last-child .num{background:var(--accent);color:var(--on-accent)}
+.session details{background:var(--paper);border:1.5px solid var(--line);border-radius:18px;min-width:0}
+.session summary{list-style:none;cursor:pointer;padding:1.2rem 1.5rem;display:grid;grid-template-columns:1fr auto;gap:.3rem 1rem;align-items:start}
+.session summary::-webkit-details-marker{display:none}
+.session h3{font-size:1.25rem;font-weight:800;line-height:1.3}
+.goal{grid-column:1/2;color:var(--ink2);font-size:1.02rem}
+.side{grid-row:1/3;grid-column:2;display:flex;flex-direction:column;align-items:flex-end;gap:.6rem}
+.mode{font-size:.85rem;font-weight:700;padding:.2rem .8rem;border-radius:999px;border:1.5px solid var(--ink);white-space:nowrap}
+.mode.live{background:var(--gold);border-color:var(--gold);color:#1f2d4a}
+.more{font-size:.9rem;font-weight:700;color:var(--accent-ink);display:flex;align-items:center;gap:.3rem;white-space:nowrap}
+.more::after{content:"";width:.45rem;height:.45rem;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:translateY(-2px) rotate(45deg);transition:transform .2s}
+details[open] .more::after{transform:translateY(2px) rotate(-135deg)}
+.more .c{display:none}
+details[open] .more .o{display:none}
+details[open] .more .c{display:inline}
+.body{padding:0 1.5rem 1.5rem;display:grid;grid-template-columns:1.2fr 1fr;gap:1.6rem;border-top:1.5px solid var(--line);padding-top:1.2rem;margin-inline:0}
+.body h4{font-size:.95rem;color:var(--muted);margin-bottom:.4rem}
+.body ul{list-style:none;display:grid;gap:.35rem}
+.body li{position:relative;padding-inline-start:1.1rem;font-size:1rem;line-height:1.5}
+.body li::before{content:"";position:absolute;inset-inline-start:0;top:.6em;width:.4rem;height:.4rem;border-radius:2px;background:var(--accent)}
+.body dl{display:grid;gap:.9rem}
+.body dd{font-size:1rem;line-height:1.5}
+
+/* meeting format + what to bring */
+.two{display:grid;grid-template-columns:1.4fr 1fr;gap:2.4rem;align-items:start}
+.two h2{font-size:1.4rem;font-weight:800;margin-bottom:.4rem;letter-spacing:-.01em}
+.two .sub{color:var(--ink2);font-size:1rem;margin-bottom:1rem}
+.tbar{display:flex;height:2.8rem;border-radius:12px;overflow:hidden;border:1.5px solid var(--line)}
+.seg{display:grid;place-items:center;font-size:.85rem;font-weight:700;color:#1f2d4a;min-width:0}
+.s0,.s5{background:var(--gold)} .s1{background:var(--accent);color:var(--on-accent)} .s2{background:var(--bg);color:var(--ink)}
+.s3{background:var(--sage)} .s4{background:var(--rose)}
+.tl{list-style:none;display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem 1.2rem;margin-top:1.2rem}
+.tl li{border-inline-start:3px solid var(--line);padding-inline-start:.7rem;font-size:.95rem;line-height:1.45}
+.tl b{display:block;font-size:.85rem;color:var(--accent-ink)}
+.tl span{font-weight:700;display:block}
+.tl em{font-style:normal;color:var(--muted);font-size:.9rem}
+.bring{list-style:none;display:grid;gap:.6rem}
+.bring li{background:var(--bg);border:1.5px solid var(--line);border-radius:12px;padding:.7rem 1rem;font-size:1.02rem}
+.bring small{display:block;color:var(--muted);font-size:.88rem}
+
+/* final project */
+.final{background:var(--navy);color:var(--on-navy);border:1.5px solid var(--navy-edge);border-radius:28px;padding:clamp(2rem,5vw,3.5rem);display:grid;grid-template-columns:1fr auto;gap:2rem;align-items:center}
+.final h2{font-size:clamp(2rem,4.4vw,3rem);font-weight:800}
+.final p{opacity:.92;max-width:58ch;margin-top:.9rem}
+.final .tag{color:var(--gold);font-weight:700;font-size:1rem;margin-bottom:.4rem}
+
+/* about */
+.about{display:grid;grid-template-columns:.8fr 1.2fr;gap:3rem;align-items:center}
+.about img{width:100%;height:auto;aspect-ratio:4/5;object-fit:cover;border-radius:24px}
+.about h2{font-size:clamp(1.9rem,3.6vw,2.6rem);font-weight:800;margin-bottom:1rem}
+.about p{color:var(--ink2);max-width:52ch}
+.about p+p{margin-top:.8rem}
+.todo{background:rgba(246,204,106,.35);outline:2px dashed var(--gold);border-radius:6px;padding:0 .3rem}
+
+/* price + form */
+.join{display:grid;grid-template-columns:.85fr 1.15fr;background:var(--paper);border:2px solid var(--ink);border-radius:28px;overflow:hidden}
+.price{background:var(--bg);padding:clamp(1.6rem,4vw,2.6rem);border-inline-end:2px solid var(--ink)}
+.price h2{font-size:1.9rem;font-weight:800}
+.amount{font-size:clamp(2.8rem,6vw,3.6rem);font-weight:800;line-height:1;margin-top:1.2rem;letter-spacing:-.03em}
+.amount-note{color:var(--ink2);font-size:.95rem;margin-top:.4rem}
+.incl{list-style:none;display:grid;gap:.6rem;margin-top:1.6rem}
+.incl li{position:relative;padding-inline-start:1.9rem;font-size:1.02rem;line-height:1.45}
+.incl li::before{content:"";position:absolute;inset-inline-start:0;top:.15em;width:1.2rem;height:1.2rem;border-radius:50%;background:var(--sage) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 12.5l4 4 8-9' fill='none' stroke='%23fff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/70% no-repeat}
+.price .aside{margin-top:1.4rem;font-size:.9rem;color:var(--muted)}
+form{padding:clamp(1.6rem,4vw,2.6rem);display:grid;gap:1.1rem;align-content:start}
+form h3{font-size:1.5rem;font-weight:800}
+form .intro{color:var(--ink2);font-size:1rem;margin-top:-.6rem}
+.field{display:grid;gap:.35rem}
+.field label,.field legend{font-weight:700;font-size:1rem}
+.field input[type=text],.field input[type=tel],.field input[type=email],.field select{font:inherit;font-size:1.05rem;color:var(--ink);background:var(--field);border:1.5px solid var(--line);border-radius:12px;padding:.7rem .9rem;min-height:3rem;width:100%}
+.field input:focus-visible,.field select:focus-visible{outline:3px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+.field input[type=tel],.field input[type=email]{direction:ltr;text-align:right}
+.field input[aria-invalid=true],.field select[aria-invalid=true]{border-color:var(--err)}
+.err{color:var(--err);font-size:.9rem;min-height:0}
+.err:empty{display:none}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.consent{display:flex;gap:.6rem;align-items:flex-start;font-size:.95rem;color:var(--ink2);line-height:1.45}
+.consent input{width:1.25rem;height:1.25rem;margin-top:.1rem;accent-color:var(--accent);flex:0 0 auto}
+.hp{position:absolute;inset-inline-start:-9999px;width:1px;height:1px;overflow:hidden}
+form .btn{width:100%;margin-top:.3rem}
+form .btn[disabled]{opacity:.6;cursor:progress}
+.status{font-size:.95rem;font-weight:700}
+.status.bad{color:var(--err)}
+.thanks{padding:clamp(1.6rem,4vw,2.6rem);display:grid;gap:.8rem;align-content:center}
+.thanks h3{font-size:1.8rem;font-weight:800}
+.thanks p{color:var(--ink2)}
+
+/* footer */
+footer{padding-block:3rem 6rem;border-top:1.5px solid var(--line);margin-top:4rem}
+.foot{display:flex;flex-wrap:wrap;gap:1.4rem 3rem;align-items:flex-start;justify-content:space-between}
+.foot img{width:80px;height:auto}
+.foot p,.foot summary{font-size:.95rem;color:var(--ink2)}
+.foot summary{cursor:pointer;font-weight:700;color:var(--ink)}
+.foot details{max-width:44rem}
+.foot details p{margin-top:.6rem}
+
+/* sticky mobile CTA */
+.mcta{display:none}
+
+@media (max-width: 900px){
+  .hero{grid-template-columns:1fr;gap:3rem;padding-block:1rem 3rem}
+  .demo{max-width:30rem}
+  .fit,.two,.about{grid-template-columns:1fr}
+  .about img{max-width:22rem}
+  .outs{grid-template-columns:1fr}
+  .out+.out{border-inline-start:0;border-top:1.5px solid var(--line)}
+  .join{grid-template-columns:1fr}
+  .price{border-inline-end:0;border-bottom:2px solid var(--ink)}
+  .final{grid-template-columns:1fr}
+}
+@media (max-width: 640px){
+  html{scroll-padding-bottom:5.5rem}
+  body{font-size:1.06rem}
+  section{padding-block:3.2rem}
+  .demo{padding-inline-end:.6rem}
+  .ask{position:relative;margin-bottom:-1rem;margin-inline-start:auto}
+  .demo{padding-block-start:0}
+  .site .s-row{grid-template-columns:1fr 1fr}
+  .site .s-row div:last-child{display:none}
+  .session{grid-template-columns:2.4rem 1fr;gap:.7rem}
+  .num{width:2.4rem;height:2.4rem;font-size:1.05rem}
+  .sessions::before{inset-inline-start:1.15rem}
+  .session summary{grid-template-columns:1fr;padding:1rem 1.1rem}
+  .side{grid-row:auto;grid-column:auto;flex-direction:row;justify-content:space-between;align-items:center;order:-1}
+  .goal{grid-column:auto}
+  .body{grid-template-columns:1fr;padding:1rem 1.1rem 1.2rem}
+  .tl{grid-template-columns:1fr 1fr}
+  .seg{font-size:.72rem}
+  .row2{grid-template-columns:1fr}
+  .mcta{display:flex;position:fixed;inset-inline:0;bottom:0;z-index:10;padding:.7rem 16px calc(.7rem + env(safe-area-inset-bottom,0px));background:var(--bg);border-top:1.5px solid var(--line);transform:translateY(110%);transition:transform .25s}
+  .mcta.show{transform:none}
+  .mcta .btn{flex:1}
+}
+@media (prefers-reduced-motion: reduce){.mcta,.more::after{transition:none}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">דילוג לתוכן</a>
+
+<header class="wrap top">
+  <img class="logo" src="assets/logo.png" alt="קהילת נשות ה-AI" width="360" height="308">
+  <a class="link" href="#join">להרשמה</a>
+</header>
+
+<main id="main">
+  <div class="wrap hero">
+    <div>
+      <span class="kicker">קורס Claude Code מאפס</span>
+      <h1><span>מתחילות מאפס.</span><span>מסיימות עם אתר באוויר.</span></h1>
+      <p class="lead">קורס חי של חמישה מפגשים לנשים שרוצות לבנות עם AI, ולא רק לשאול אותו. בלי רקע טכני ובלי לכתוב שורת קוד: את מבקשת בעברית, <span class="nw">ו-Claude Code</span> בונה.</p>
+      <div class="ctas">
+        <a class="btn" href="#join">אני רוצה להירשם</a>
+        <a class="btn ghost" href="#sessions">מה לומדות בכל מפגש</a>
+      </div>
+      <ul class="facts">
+        <li><b>5</b>מפגשים חיים</li>
+        <li><b>15</b>שעות ביחד</li>
+        <li><b>פרונטלי וזום</b></li>
+        <li><b>0</b>ידע בקוד נדרש</li>
+      </ul>
+    </div>
+
+    <figure class="demo">
+      <div class="ask" aria-hidden="true"><small>את כותבת ל-Claude Code</small>תבנה לי דף לסטודיו היוגה שלי, עם השיעורים של השבוע וכפתור לוואטסאפ</div>
+      <div class="browser" aria-hidden="true">
+        <div class="bar"><span class="dots"><i></i><i></i><i></i></span><span class="url" translate="no"><span>studio-maya.co.il</span></span></div>
+        <div class="site">
+          <div class="s-head"><span class="s-logo"></span><span class="s-title">סטודיו מאיה<small>יוגה ונשימה, תל אביב</small></span></div>
+          <div class="s-img"></div>
+          <div class="s-row"><div><b>ראשון</b>ויניאסה 19:00</div><div><b>שלישי</b>יין יוגה 20:00</div><div><b>חמישי</b>בוקר 07:30</div></div>
+          <span class="s-btn">דברי איתי בוואטסאפ</span>
+        </div>
+      </div>
+      <figcaption>ככה זה עובד: בקשה אחת בעברית, דף שלם. במפגש הראשון כבר בונות דף ראשון משלך.</figcaption>
+    </figure>
+  </div>
+
+  <section class="band" aria-labelledby="fit-h">
+    <div class="wrap fit">
+      <div>
+        <div class="sec-head"><h2 id="fit-h">הקורס הזה בשבילך אם</h2></div>
+        <ul class="checks">
+          <li>את בעלת עסק, פרילנסרית או שכירה, ורוצה אתר או כלי משלך</li>
+          <li>כבר שאלת את ChatGPT או את Claude, ועכשיו את רוצה לבנות איתם</li>
+          <li>אין לך שום רקע טכני, ואת לא מתכוונת ללמוד לתכנת</li>
+          <li>את רוצה ללמוד בקבוצה, עם ליווי צמוד, ולא לבד מול סרטונים</li>
+        </ul>
+      </div>
+      <aside class="nocode">
+        <h3>לא צריך לדעת לכתוב קוד</h3>
+        <p>Claude Code כותב את הקוד. את אומרת לו מה לבנות, בודקת שזה נראה כמו שרצית, ומבקשת שינויים. את כל השאר לומדות ביחד, צעד אחר צעד.</p>
+        <p class="say">"תוסיף לאתר עמוד של המלצות, באותו עיצוב"</p>
+      </aside>
+    </div>
+  </section>
+
+  <section aria-labelledby="out-h">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2 id="out-h">עם מה יוצאות מהקורס</h2>
+        <p>כל מפגש נגמר במשהו שעובד ושייך לעסק שלך. אין תיאוריה שנשארת בנייר.</p>
+      </div>
+      <div class="outs">
+        <div class="out">
+          <svg viewBox="0 0 40 40" aria-hidden="true"><rect x="4" y="7" width="32" height="26" rx="4" fill="none" stroke="var(--accent)" stroke-width="2.5"/><path d="M4 14h32" stroke="var(--accent)" stroke-width="2.5"/><circle cx="20" cy="24" r="4" fill="var(--gold)"/></svg>
+          <h3>אתר עסקי באוויר</h3>
+          <p>עם כתובת משלך, שמתעדכן בבקשה אחת.</p>
+        </div>
+        <div class="out">
+          <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M10 6h16l6 6v22H10z" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linejoin="round"/><path d="M15 19h12M15 25h8" stroke="var(--sage)" stroke-width="2.5" stroke-linecap="round"/></svg>
+          <h3>סקיל אישי</h3>
+          <p>מתכון ש-Claude מבצע בשבילך, כל פעם מחדש.</p>
+        </div>
+        <div class="out">
+          <svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="21" r="13" fill="none" stroke="var(--accent)" stroke-width="2.5"/><path d="M20 13v8l5 4" fill="none" stroke="var(--sage)" stroke-width="2.5" stroke-linecap="round"/><path d="M13 4h14" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"/></svg>
+          <h3>אוטומציה אחת</h3>
+          <p>תדריך בוקר מהמיילים והיומן, שרץ לבד.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="sessions" class="band" aria-labelledby="ses-h">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2 id="ses-h">חמשת המפגשים</h2>
+        <p>שלוש שעות כל מפגש. לחצי על מפגש כדי לראות מה לומדות, מה מתרגלות ועם מה יוצאות.</p>
+      </div>
+      <ol class="sessions">
+        <li class="session">
+          <span class="num" aria-hidden="true">1</span>
+          <details>
+            <summary>
+              <h3>שלום Claude Code: מה זה, התקנה ופרויקט ראשון</h3>
+              <p class="goal">בסוף המפגש Claude Code מותקן אצלך, ויש לך דף ראשון שנבנה מבקשה אחת.</p>
+              <span class="side"><span class="mode live">פרונטלי</span><span class="more"><span class="o">פירוט</span><span class="c">סגירה</span></span></span>
+            </summary>
+            <div class="body">
+              <div><h4>מה לומדות</h4><ul><li>מה זה AI, ומה ההבדל בין Claude ל-Claude Code</li><li>חשבון ומנוי (Pro או Max)</li><li>התקנת אפליקציית הדסקטופ והטרמינל</li><li>סשן ותיקייה: איפה Claude עובד</li><li>איך מבקשים מ-Claude, ואיך מאשרות הרשאות</li></ul></div>
+              <dl><div><dt><h4>תרגול</h4></dt><dd>דף "עליי" ראשון שנבנה מפרומפט אחד.</dd></div><div><dt><h4>תוצר</h4></dt><dd>Claude Code מותקן ועובד, ודף ראשון על המחשב.</dd></div></dl>
+            </div>
+          </details>
+        </li>
+        <li class="session">
+          <span class="num" aria-hidden="true">2</span>
+          <details>
+            <summary>
+              <h3>עובדות נכון: CLAUDE.md, Plan Mode ופתרון תקלות</h3>
+              <p class="goal">בסוף המפגש ל-Claude יש "מוח" של העסק שלך, והוא עובד לפי הכללים שלך.</p>
+              <span class="side"><span class="mode">זום</span><span class="more"><span class="o">פירוט</span><span class="c">סגירה</span></span></span>
+            </summary>
+            <div class="body">
+              <div><h4>מה לומדות</h4><ul><li>CLAUDE.md, "קובץ המלך": מי את, מה העסק, איך את רוצה שיכתבו</li><li>מצבי עבודה, Plan Mode והרשאות</li><li>הקשר ו-‎/clear, בחירת מודל ושימוש במכסה</li><li>מה עושים כש-Claude נתקע או מבקש התקנה</li></ul></div>
+              <dl><div><dt><h4>תרגול</h4></dt><dd>כותבות CLAUDE.md לעסק, ובעזרתו מכינות מסמך ממותג (הצעת מחיר או נייר פירמה) כ-HTML וכ-PDF.</dd></div><div><dt><h4>תוצר</h4></dt><dd>CLAUDE.md עסקי ומסמך ממותג ראשון.</dd></div></dl>
+            </div>
+          </details>
+        </li>
+        <li class="session">
+          <span class="num" aria-hidden="true">3</span>
+          <details>
+            <summary>
+              <h3>סקילים: המתכונים של Claude, ובונות אתר אמיתי</h3>
+              <p class="goal">בסוף המפגש יש לך אתר עסקי על המחשב וסקיל אחד שעושה בשבילך משימה שחוזרת.</p>
+              <span class="side"><span class="mode">זום</span><span class="more"><span class="o">פירוט</span><span class="c">סגירה</span></span></span>
+            </summary>
+            <div class="body">
+              <div><h4>מה לומדות</h4><ul><li>מה זה סקיל, ומה זה סוכן</li><li>חנות הסקילים ובטיחות: מה מתקינות ומה לא</li><li>הקסם של הסלאש, ואיך מסדרות את הסקילים</li><li>בניית סקיל אישי עם skill-creator</li><li>בניית אתר עסקי עם סקילי עיצוב</li></ul></div>
+              <dl><div><dt><h4>תרגול</h4></dt><dd>אתר עסקי מקומי, וסקיל אחד למשימה שחוזרת אצלך (למשל פוסט שבועי).</dd></div><div><dt><h4>תוצר</h4></dt><dd>אתר עסקי על המחשב וסקיל אישי שעובד.</dd></div></dl>
+            </div>
+          </details>
+        </li>
+        <li class="session">
+          <span class="num" aria-hidden="true">4</span>
+          <details>
+            <summary>
+              <h3>קונקטורים ואוטומציות: Claude נכנס לכלים שלך</h3>
+              <p class="goal">בסוף המפגש Claude קורא את המיילים והיומן שלך ומכין לך תדריך כל בוקר.</p>
+              <span class="side"><span class="mode">זום</span><span class="more"><span class="o">פירוט</span><span class="c">סגירה</span></span></span>
+            </summary>
+            <div class="body">
+              <div><h4>מה לומדות</h4><ul><li>מה זה קונקטור (MCP), בשפה פשוטה</li><li>חיבור Gmail, יומן, Drive, Notion, Canva ו-Figma</li><li>הדפדפן של Claude ומשימות מתוזמנות</li><li>הרשאות ואבטחה: מה נותנים ומה לא</li></ul></div>
+              <dl><div><dt><h4>תרגול</h4></dt><dd>תדריך בוקר אוטומטי (מיילים ויומן), או מכונת תוכן שבוחרת לפי העסק.</dd></div><div><dt><h4>תוצר</h4></dt><dd>שני קונקטורים מחוברים ואוטומציה אחת שרצה לבד.</dd></div></dl>
+            </div>
+          </details>
+        </li>
+        <li class="session">
+          <span class="num" aria-hidden="true">5</span>
+          <details>
+            <summary>
+              <h3>מעלות לאוויר ופרויקט גמר</h3>
+              <p class="goal">בסוף המפגש האתר שלך באוויר, עם כתובת משלו, ואת מציגה אותו לקבוצה.</p>
+              <span class="side"><span class="mode live">פרונטלי</span><span class="more"><span class="o">פירוט</span><span class="c">סגירה</span></span></span>
+            </summary>
+            <div class="body">
+              <div><h4>מה לומדות</h4><ul><li>גיטהאב: מילון קטן, ושמירה על סודות</li><li>Vercel, דומיין ועדכון אוטומטי</li><li>אתר שעובד בטלפון ונגיש לכולן</li><li>הצגת פרויקטי גמר</li><li>Claude, ChatGPT או Gemini? ומפת דרכים להמשך</li></ul></div>
+              <dl><div><dt><h4>תרגול</h4></dt><dd>מעלות את האתר מהמפגש השלישי לאוויר ומשפרות אותו.</dd></div><div><dt><h4>תוצר</h4></dt><dd>אתר עסקי באוויר עם כתובת משלו.</dd></div></dl>
+            </div>
+          </details>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section aria-labelledby="fmt-h">
+    <div class="wrap two">
+      <div>
+        <h2 id="fmt-h">איך נראה מפגש</h2>
+        <p class="sub">לכל המפגשים אותו מבנה, כדי שתמיד תדעי מה קורה עכשיו. 180 דקות בסך הכול.</p>
+        <div class="tbar" aria-hidden="true">
+          <span class="seg s0" style="flex:15">15</span><span class="seg s1" style="flex:45">45</span><span class="seg s2" style="flex:10">10</span><span class="seg s3" style="flex:70">70</span><span class="seg s4" style="flex:25">25</span><span class="seg s5" style="flex:15">15</span>
+        </div>
+        <ol class="tl">
+          <li><b>15 דק׳</b><span>פתיחה</span><em>סבב הצלחות מהשבוע</em></li>
+          <li><b>45 דק׳</b><span>הדגמה חיה</span><em>רואות איך זה נעשה, צעד אחר צעד</em></li>
+          <li><b>10 דק׳</b><span>הפסקה</span></li>
+          <li><b>70 דק׳</b><span>תרגול מודרך</span><em>בקבוצות קטנות</em></li>
+          <li><b>25 דק׳</b><span>תקלות ושאלות</span><em>פותרות ביחד</em></li>
+          <li><b>15 דק׳</b><span>משימת בית וסיכום</span></li>
+        </ol>
+      </div>
+      <div>
+        <h2>מה מביאות</h2>
+        <p class="sub">זה הכול. את השאר מתקינות ביחד במפגש הראשון.</p>
+        <ul class="bring">
+          <li>מחשב נייד<small>Mac או Windows</small></li>
+          <li>מנוי Claude Pro<small>פותחות אותו ביחד במפגש הראשון</small></li>
+          <li>רעיון לאתר או לעסק<small>גם רעיון חצי אפוי מתאים</small></li>
+          <li>סקרנות ופתיחות</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="fin-h">
+    <div class="wrap">
+      <div class="final">
+        <div>
+          <p class="tag">פרויקט הגמר</p>
+          <h2 id="fin-h">האתר שלך, באוויר</h2>
+          <p>בין המפגשים ממשיכות לבנות את אותו אתר. במפגש החמישי כל אחת מציגה אותו לקבוצה: מה הוא עושה, איך בנתה אותו עם Claude Code, ומה היא רוצה להוסיף הלאה.</p>
+        </div>
+        <a class="btn" href="#join">אני רוצה להירשם</a>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="me-h">
+    <div class="wrap about">
+      <img src="assets/tal.webp" alt="טל עינן מדברת מול קהל עם מיקרופון" width="800" height="1000" loading="lazy">
+      <div>
+        <h2 id="me-h">נעים מאוד, אני טל עינן</h2>
+        <p><span class="todo">[הטקסט שלך יבוא כאן: 3 עד 4 שורות על מי את, הקשר שלך לקהילת נשות ה-AI, ולמה פתחת את הקורס.]</span></p>
+      </div>
+    </div>
+  </section>
+
+  <section id="join" aria-labelledby="join-h">
+    <div class="wrap">
+      <div class="join">
+        <div class="price">
+          <h2 id="join-h">מה מקבלות</h2>
+          <p class="amount"><span class="todo">₪___</span></p>
+          <p class="amount-note">לכל הקורס</p>
+          <ul class="incl">
+            <li>5 מפגשים חיים של 3 שעות, פרונטלי וזום</li>
+            <li>תרגול מודרך בקבוצות קטנות בכל מפגש</li>
+            <li>שיעורים מוקלטים להעמקה בין המפגשים</li>
+            <li>פרויקט גמר: האתר שלך באוויר, עם כתובת משלו</li>
+          </ul>
+          <p class="aside">מנוי Claude Pro משולם בנפרד ישירות ל-Anthropic.</p>
+        </div>
+
+        <div id="form-wrap">
+          <form id="signup" novalidate>
+            <h3>הרשמה לקורס</h3>
+            <p class="intro">משאירות פרטים, ואני חוזרת אלייך עם כל הפרטים להצטרפות.</p>
+            <div class="field">
+              <label for="f-name">שם מלא</label>
+              <input id="f-name" name="name" type="text" autocomplete="name" required aria-describedby="e-name">
+              <p class="err" id="e-name" aria-live="polite"></p>
+            </div>
+            <div class="row2">
+              <div class="field">
+                <label for="f-phone">טלפון</label>
+                <input id="f-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="050-0000000" required aria-describedby="e-phone">
+                <p class="err" id="e-phone" aria-live="polite"></p>
+              </div>
+              <div class="field">
+                <label for="f-email">מייל</label>
+                <input id="f-email" name="email" type="email" autocomplete="email" spellcheck="false" placeholder="name@example.com" required aria-describedby="e-email">
+                <p class="err" id="e-email" aria-live="polite"></p>
+              </div>
+            </div>
+            <div class="field">
+              <label for="f-level">איפה את היום עם AI?</label>
+              <select id="f-level" name="level" required aria-describedby="e-level">
+                <option value="">בחרי</option>
+                <option>עוד לא התחלתי</option>
+                <option>משתמשת ב-ChatGPT או ב-Claude</option>
+                <option>כבר בניתי משהו עם AI</option>
+              </select>
+              <p class="err" id="e-level" aria-live="polite"></p>
+            </div>
+            <label class="consent"><input type="checkbox" name="updates"> אשמח לקבל עדכונים על קורסים ומפגשים של קהילת נשות ה-AI</label>
+            <div class="hp" aria-hidden="true"><label for="f-web">אתר</label><input id="f-web" name="website" type="text" tabindex="-1" autocomplete="off"></div>
+            <button class="btn" type="submit">שליחת הרשמה</button>
+            <p class="status" id="status" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <div>
+      <img class="logo" src="assets/logo.png" alt="קהילת נשות ה-AI" width="360" height="308" loading="lazy">
+      <p style="margin-top:.6rem"><a href="https://aiwomen.co.il">aiwomen.co.il</a></p>
+    </div>
+    <div>
+      <p>הפרטים שתשאירי משמשים רק כדי לחזור אלייך לגבי הקורס. לא מעבירות אותם לאף אחד.</p>
+      <details>
+        <summary>הצהרת נגישות</summary>
+        <p>הדף נבנה כך שיהיה נוח לשימוש לכולן: ניווט מלא במקלדת, ניגודיות צבעים לפי תקן WCAG 2.1 ברמה AA, תמיכה בקוראי מסך, התאמה לטלפון ותמיכה במצב כהה ובהפחתת תנועה. נתקלת בבעיה? כתבי לנו דרך <a href="https://aiwomen.co.il">aiwomen.co.il</a> ונטפל בה.</p>
+      </details>
+    </div>
+  </div>
+</footer>
+
+<div class="mcta" id="mcta"><a class="btn" href="#join">אני רוצה להירשם</a></div>
+
+<script>
+// Paste the Apps Script web-app URL here (see README.md).
+const SHEET_URL = '';
+
+const form = document.getElementById('signup');
+const statusEl = document.getElementById('status');
+
+const rules = {
+  name: v => v.trim().length >= 2 || 'כתבי את השם המלא שלך',
+  phone: v => /^0\d{8,9}$/.test(normPhone(v)) || 'מספר טלפון ישראלי, למשל 050-1234567',
+  email: v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()) || 'כתובת מייל, למשל name@example.com',
+  level: v => v !== '' || 'בחרי את האפשרות שהכי מתאימה לך',
+};
+
+function normPhone(v){
+  let d = v.replace(/\D/g, '');
+  if (d.startsWith('972')) d = '0' + d.slice(3);
+  return d;
+}
+
+function check(name){
+  const el = form.elements[name];
+  const res = rules[name](el.value);
+  const msg = res === true ? '' : res;
+  document.getElementById('e-' + name).textContent = msg;
+  el.setAttribute('aria-invalid', msg ? 'true' : 'false');
+  return !msg;
+}
+
+Object.keys(rules).forEach(name => {
+  form.elements[name].addEventListener('blur', () => { if (form.elements[name].value) check(name); });
+  form.elements[name].addEventListener('input', () => { if (form.elements[name].getAttribute('aria-invalid') === 'true') check(name); });
+});
+
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  const bad = Object.keys(rules).filter(n => !check(n));
+  if (bad.length){ form.elements[bad[0]].focus(); return; }
+  if (form.elements.website.value) return; // bot
+
+  const btn = form.querySelector('button');
+  btn.disabled = true; btn.textContent = 'שולחת…';
+  statusEl.textContent = ''; statusEl.className = 'status';
+
+  const data = {
+    name: form.elements.name.value.trim(),
+    phone: normPhone(form.elements.phone.value),
+    email: form.elements.email.value.trim(),
+    level: form.elements.level.value,
+    updates: form.elements.updates.checked ? 'כן' : 'לא',
+    source: location.href,
+  };
+
+  try {
+    if (!SHEET_URL) throw new Error('SHEET_URL is not set');
+    const r = await fetch(SHEET_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(data) });
+    const j = await r.json();
+    if (!j.ok) throw new Error(j.error || 'failed');
+    document.getElementById('form-wrap').innerHTML =
+      '<div class="thanks" tabindex="-1"><h3>נרשמת, ' + escapeHtml(data.name.split(' ')[0]) + '!</h3><p>קיבלתי את הפרטים שלך ואחזור אלייך בקרוב עם כל מה שצריך כדי להצטרף.</p></div>';
+    document.querySelector('.thanks').focus();
+  } catch (err) {
+    console.error(err);
+    btn.disabled = false; btn.textContent = 'שליחת הרשמה';
+    statusEl.className = 'status bad';
+    statusEl.textContent = 'ההרשמה לא נשלחה. בדקי את החיבור לאינטרנט ונסי שוב.';
+  }
+});
+
+function escapeHtml(s){ return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+// Sticky CTA on phones: shows after the hero, hides once the form is on screen.
+const mcta = document.getElementById('mcta');
+const seen = new Map();
+const io = new IntersectionObserver(entries => {
+  entries.forEach(en => seen.set(en.target, en.isIntersecting));
+  const heroOn = seen.get(document.querySelector('.hero'));
+  const joinOn = seen.get(document.getElementById('join'));
+  mcta.classList.toggle('show', heroOn === false && !joinOn);
+});
+io.observe(document.querySelector('.hero'));
+io.observe(document.getElementById('join'));
+</script>
+</body>
+</html>
